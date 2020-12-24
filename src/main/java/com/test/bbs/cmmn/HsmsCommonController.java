@@ -45,16 +45,16 @@ import com.test.bbs.member.service.impl.memberVO;
 
 
 @Component("fileUtils")
-public class HsmsCommonController {
+public class commonController {
 	
 	/** log */
 	private static final Logger logger = LoggerFactory.getLogger("CMMN");
 
-	@RequestMapping(value = "/hsmsFileUpload.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/FileUpload.do", method = RequestMethod.POST)
 	@ResponseBody
 	public HashMap<String, Object> hsmsFileUpload(HttpServletRequest req, Model model ) throws Exception {
 
-		List<HsmsFileInfoVO> fileNoList = new ArrayList<HsmsFileInfoVO>();
+		List<FileInfoVO> fileNoList = new ArrayList<FileInfoVO>();
 
 		HashMap<String, Object> resultMap = new HashMap<>();
 
@@ -64,7 +64,7 @@ public class HsmsCommonController {
 
 			memberVO loginVo = (memberVO) req.getSession().getAttribute("loginVO");
 
-			fileNoList = hsmsCommonService.insertFiles(files, loginVo.getUniqId(), "fileUpload");
+			fileNoList = CommonService.insertFiles(files, loginVo.getUniqId(), "fileUpload");
 
 			resultMap.put("resultStr", "1");
 			resultMap.put("fileNoList", fileNoList);
@@ -80,9 +80,9 @@ public class HsmsCommonController {
 		return resultMap;
 	}
 
-	@RequestMapping(value = "/hsmsCkeditorUpload.do")
+	@RequestMapping(value = "/ckeditorUpload.do")
 	@ResponseBody
-	public void hsmsCkeditorUpload(HttpServletRequest req, HttpServletResponse res, @RequestParam MultipartFile upload) throws Exception {
+	public void ckeditorUpload(HttpServletRequest req, HttpServletResponse res, @RequestParam MultipartFile upload) throws Exception {
 
 		String CKEditorFuncNum = req.getParameter("CKEditorFuncNum");
 
@@ -93,7 +93,7 @@ public class HsmsCommonController {
 
 		memberVO loginVo = (memberVO) req.getSession().getAttribute("loginVO");
 
-		uploadVo = hsmsCommonService.insertFiles(files, loginVo.getUserId(), "ckeditor");
+		uploadVo = commonService.insertFiles(files, loginVo.getUserId(), "ckeditor");
 
 		res.setContentType("text/html; charset=UTF-8");
         PrintWriter out = res.getWriter();
