@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="bbs.dashBoard">
+
+	<!-- dashBoard Insert -->
+	<insert id="insert" parameterType="com.test.bbs.dashBoard.service.impl.dashBoardVO" useGeneratedKeys="true" keyProperty="boardNo">
+	<selectKey keyProperty="boardNo" resultType="int" order="BEFORE">
+		SELECT DASH_BOARD_SEQ.NEXTVAL FROM DUAL
+    </selectKey>
+	/* bbs.dashBoard.insert */
+	INSERT INTO DASH_BOARD (
+		BOARD_NO
+		, BOARD_TITLE
+		, BOARD_CONTENT
+		, BOARD_WRITER
+		, REGDATE
+	)VALUES(
+		DASH_BOARD_SEQ.NEXTVAL
+		, #{boardTitle}
+		, #{boardContent}
+		, #{boardWriter}
+		, SYSTIMESTAMP
+	)
+	</insert>
+	
+	<!-- dashBoard Select -->
+	<select id="list" parameterType="com.test.bbs.dashBoard.Criteria" resultType="com.test.bbs.dashBoard.service.impl.dashBoardVO">
+	/* bbs.dashBoard.list */
+	SELECT
+		ROWNUM AS rnum
+		, BOARD_NO
+		, BOARD_TITLE
+		, BOARD_CONTENT
+		, BOARD_WRITER
+		, REGDATE
+	FROM DASH_BOARD
+	WHERE
+		ROWNUM BETWEEN #{rowStart} AND #{rowEnd}
+	ORDER BY BOARD_NO DESC
+	</select>
+	
+	<!-- dashBoard List Page -->
+	<select id="listPage" parameterType="com.test.bbs.dashBoard.SearchCriteria" resultType="com.test.bbs.dashBoard.service.impl.dashBoardVO">
+	/* bbs.dashBoard.listPage */
+	SELECT
+		a.BOARD_NO
+		, a.BOARD_TITLE
+		, a.BOARD_CONTENT
+		, a.BOARD_WRITER
+		, a.REGDATE
+	FROM (
+		SELECT
+			BOARD_NO
+			, BOARD_TITLE
+			, BOARD_CONTENT
+			, BOARD_WRITER
+			, REGDATE
+			, ROWNUM AS rnum
+		FROM DASH_BOARD
+		WHERE 1 = 1
+		<include refid="search"></include>
+		) a
+	WHERE
+		ROWNUM BETWEEN #{rowStart} AND #{rowEnd}
+	ORDER BY BOARD_NO DESC
+	</select>
+	
+	<!-- dashBoard List Count -->
+	<select id="listCount" resultType="int">
+	SELECT Count(BOARD_NO)
+	FROM DASH_BOARD
+	WHERE 1 = 1
+	<include refid="search"></include>
+	AND BOARD_NO > 0
+	</select>
+	
+	<sql id="search">
+	<if test="searchType != null">
+		<if test="searchType == 't'.toString()">AND BOARD_TITLE '%' || #{keyword} || '%'</if>
+		<if test="searchType == 'c'.toString()">AND BOARD_CONTENT '%' || #{keyword} || '%'</if>
+		<if test="searchType == 'w'.toString()">AND BOARD_WRITER '%' || #{keyword} || '%'</if>
+		<if test="searchType == 'tc'.toString()">
+			AND (BOARD_TITLE '%' || #{keyword} || '%') OR (BOARD_CONTENT '%' || #{keyword} || '%')
+		</if>
+	</if>
+	</sql>
+	
+	<select id="read" parameterType="int" resultType="com.test.bbs.dashBoard.service.impl.dashBoardVO">
+	/* bbs.dashBoard.read */
+	SELECT 
+		BOARD_NO
+		, BOARD_TITLE
+		, BOARD_CONTENT
+		, BOARD_WRITER
+		, REGDATE
+	FROM DASH_BOARD
+	WHERE BOARD_NO = #{boardNo}
+	</select>
+	
+	<!-- dashBoard Select -->
+	<update id="update" parameterType="com.test.bbs.dashBoard.service.impl.dashBoardVO">
+	/* bbs.dashBoard.update */
+	UPDATE DASH_BOARD
+	SET
+		BOARD_TITLE = #{boardTitle}
+		, BOARD_CONTENT = #{boardContent}
+	WHERE BOARD_NO = #{boardNo} 
+	</update>
+	
+	<!-- dashBoard Select -->
+	<delete id="delete" parameterType="int">
+	/* bbs.dashBoard.delete */
+	DELETE FROM DASH_BOARD
+	WHERE BOARD_NO = #{boardNo}
+	</delete>
+	
+	<insert id="isnertFile" parameterType="HashMap">
+	/* bbs.dashBoard.insertFile */
+	INSERT INTO DASH_BOARD_ATTCHFILE (
+		FILE_NO
+		, BOARD_NO
+		, ORG_FILE_NAME
+		, CHNG_FILE_NAME
+		, FILE_SIZE
+	)VALUES(
+		DASH_BOARD_ATTCHFILE_SEQ.NEXTVAL
+		, #{boardNo}
+		, #{orgFileName}
+		, #{chngFileName}
+		, #{fileSize}	
+	)
+	</insert>
+	
+</mapper>

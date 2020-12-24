@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="bbs.member">
+
+	<!-- member signUp -->
+	<insert id="signUp">
+	/* bbs.userinfo.signUp */
+	INSERT INTO USER_INFO(
+		USER_ID 
+		, PASSWORD 
+		, USER_NM
+		, USER_STTUS
+	)VALUES(
+		#{userId} 
+		, #{password}
+		, #{userNm}
+		, 'C'
+	)
+    </insert>
+    
+    <!-- member signIn -->
+    <select id="signIn" resultType="com.test.bbs.member.service.impl.memberVO">
+    /* bbs.userinfo.signIn */
+    SELECT
+    	USER_ID
+    	, PASSWORD
+    FROM USER_INFO
+    WHERE USER_ID = #{userId}
+    </select>
+    
+    <!-- member signEdit -->
+    <update id="signEdit">
+    /* bbs.userinfo.signEdit */
+    UPDATE USER_INFO
+    SET
+    	PASSWORD = #{password}
+    WHERE USER_ID = #{userId}
+    </update>
+    
+    <!-- user_sttus Dead -->
+    <update id="signDrawal">
+    /* bbs.userinfo.signDrawal */
+    UPDATE USER_INFO
+    SET
+    	USER_STTUS = #{userSttus}
+    WHERE USER_ID = #{userId}
+    </update>
+    
+    <!-- chked ID & PW -->
+    <select id="chkedUserInfo" resultType="int">
+    /* bbs.userinfo.chkedUserInfo */
+    SELECT
+    	COUNT(*)
+   	FROM
+   		USER_INFO
+	WHERE USER_ID = #{userId}
+    </select>
+    
+</mapper>

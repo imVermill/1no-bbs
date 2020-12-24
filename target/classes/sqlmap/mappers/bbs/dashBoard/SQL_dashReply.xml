@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="bbs.dashReply">
+
+	<!-- dashBoard Reply Select -->
+	<select id="selectReply" resultType="com.test.bbs.dashBoard.service.impl.dashReplyVO">
+	/* bbs.dashReply.selectReply */
+	SELECT
+		REPLY_NO
+		, REPLY_CONTENT
+		, REPLY_WRITER
+		, REGDATE
+	FROM DASH_REPLY
+	WHERE
+		BOARD_NO = #{boardNo}
+	</select>
+	
+	<!-- dashBoard Reply Insert -->
+	<insert id="insertReply">
+	/* bbs.dashReply.insertReply */
+	INSERT INTO DASH_REPLY(
+		BOARD_NO
+		, REPLY_NO
+		, REPLY_CONTENT
+		, REPLY_WRITER
+	)VALUES(
+		#{boardNo}
+		, DASH_REPLY_SEQ.NEXTVAL
+		, #{replyContent}
+		, #{replyWriter}
+	)
+	</insert>
+	
+	<!-- dashBoard Reply Update -->
+	<update id="updateReply" parameterType="com.test.bbs.dashBoard.service.impl.dashReplyVO">
+	/* bbs.dashReply.updateReply */
+	UPDATE DASH_REPLY
+	SET
+		REPLY_CONTENT = #{replyContent}
+	WHERE REPLY_NO = #{replyNo}
+	</update>
+	
+	<!-- dashBoard Reply Delete -->
+	<delete id="deleteReply" parameterType="com.test.bbs.dashBoard.service.impl.dashReplyVO">
+	/* bbs.dashReply.deleteReply */
+	DELETE FROM DASH_REPLY
+	WHERE REPLY_NO = #{replyNo}
+	</delete>
+	
+	<!-- dashBoard Reply SelectSearch -->
+	<select id="selectReplySearch" resultType="com.test.bbs.dashBoard.service.impl.dashReplyVO">
+	SELECT
+		BOARD_NO
+		, REPLY_NO
+		, REPLY_CONTENT
+		, REPLY_WRITER
+		, REGDATE
+	FROM DASH_REPLY
+	WHERE REPLY_NO = #{replyNo}
+	</select>
+</mapper>
