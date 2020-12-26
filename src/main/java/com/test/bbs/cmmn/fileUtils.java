@@ -18,8 +18,7 @@ import com.test.bbs.dashBoard.service.impl.dashBoardVO;
 public class fileUtils {
 	private static final String filePath = "C:\\DevTools\\downloads";
 	
-	public List<Map<String, Object>> parseInsertFileInfo(dashBoardVO param,
-			MultipartHttpServletRequest mphr) throws Exception {
+	public List<Map<String, Object>> parseInsertFileInfo(dashBoardVO param, MultipartHttpServletRequest mphr) throws Exception {
 		/*
 		 * Iterator은 데이터들의 집합체에서 컬렉션으로부터 정보를 얻어올 수 있는 인터페이스
 		 * List, Array 순차적으로 데이터의 접근 가능, Map등의 클래스들은 순차적으로 접근 불가능

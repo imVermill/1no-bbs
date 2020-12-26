@@ -149,3 +149,194 @@ function sendAjax(reqUrl, reqData, reqType, callback){
     	});
 
 }
+
+// hide modal function
+function hideModal(modalId, callback, data) {
+	
+	// init modal hide info
+    hideCallback = null;
+    hideData = null;
+
+    var objModal = $("#" + modalId);
+    if (!objModal) {
+    	return ;
+    }
+
+	if (typeof callback == "function") {
+		hideCallback = callback;
+		if (data) {
+    		hideData = data;
+		}
+	}
+
+	objModal.modal("hide");
+	objModal.children("div.modal-dialog").html("");
+}
+
+
+function showModalUrl(modalId, reqUrl, data, callback) {
+    console.log("modalId [%s], reqUrl[%s], callback[%s]", modalId, reqUrl, callback);
+	calledModalId = modalId;
+
+	// init modal show info
+    showCallback = null;
+    showData = null;
+
+	var objModal = $("#" + modalId);
+    if (!objModal) {
+    	return ;
+    }
+    var objDialog = $("#" + modalId + " .modal-dialog");
+    if (!objDialog) {
+    	return ;
+    }
+
+	if (typeof callback == "function") {
+		showCallback = callback;
+		if (data) {
+			showData = data;
+		}
+	}
+
+    objDialog.load(reqUrl + ' .modal-content', data,  function(response, status, jqXHR) {
+    	if (status === "success") {
+    		objModal.modal("show");
+    	}else{
+    		return;
+    	}
+    });
+
+}
+
+function closeModal(oBtn) {
+	if(oBtn.id.indexOf("btnClose") > -1) {
+		var openModalId = $(oBtn).data("target");
+		if (openModalId) {
+			if (calledModalId == openModalId) {
+				hideModal(calledModalId);
+			}else {
+				hideModal(openModalId);
+			}
+		}else {
+			hideModal(calledModalId);
+		}
+	}
+}
+
+
+function alertFocus(sType, sMsg, focusId) {
+	alertMsg(sType, sMsg, "", "", focusId);
+}
+
+function alertMsg(sType, sMsg, sCallback, sSize, focusId) {
+
+	var msgDialog;
+
+	var ko = {
+			OK      : '확인',
+			CANCEL  : '취소',
+			CONFIRM : '확인'
+		};
+	bootbox.addLocale('ko', ko);
+	bootbox.setDefaults({
+			locale: 'ko',
+			closeButton: true
+		});
+
+	if (typeof sCallback != 'function') {
+		sCallback = function(){};
+	}
+	if (!sSize || sSize == undefined) {
+		sSize = null;
+	}
+
+	if (sType == "alert") {
+		sTitle = '<i class="fas fa-question-circle fa-1x"></i> Alert';
+
+		msgDialog = bootbox.dialog({
+            title: sTitle
+            ,message: sMsg
+			,size : sSize
+			,centerVertical : true
+            ,buttons: {
+                ok: {
+                    label: '확인',
+                    className: "btn-primary btn-sm",
+                    callback: sCallback
+                }
+            }
+        });
+	}else if (sType == "info") {
+		sTitle = '<i class="fas fa-exclamation-circle fa-1x"></i>  Information';
+
+		msgDialog = bootbox.alert({
+            title: sTitle
+            ,message: sMsg
+			,size : sSize
+			,callback :  sCallback	// execute callback function before click ok button
+			,centerVertical : true
+            ,buttons: {
+                ok: {
+                    className: "btn-info btn-sm"
+                }
+            }
+		});
+	}else if (sType == "error") {
+		sTitle = '<i class="fas fa-times-circle fa-1x"></i>  Error';
+
+		msgDialog = bootbox.alert({
+            title: sTitle
+            ,message: sMsg
+			,size : sSize
+			,callback :  sCallback
+			,centerVertical : true
+            ,buttons: {
+                ok: {
+                    className: "btn-danger btn-sm"
+                }
+            }
+		});
+	}else if (sType == "confirm") {
+		sTitle = '<i class="far fa-check-circle"></i>  Confirm';
+
+		msgDialog = bootbox.confirm({
+            title: sTitle
+            ,message: sMsg
+			,centerVertical : true
+			,buttons : {
+				cancel: {
+		            label: '<i class="fa fa-times"></i> 취소'
+		        },
+		        confirm: {
+		            label: '<i class="fa fa-check"></i> 확인'
+		        }
+			}
+			,size : sSize
+			,callback :  function(result) {
+				sCallback(result);
+			}
+		});
+	}
+
+	msgDialog.on('hidden.bs.modal', function(e){
+		console.log("call bootbox hidden!");
+		// Do something with the dialog just after it has been shown to the user...
+		var modalBody = $(".modal.fade.show");
+		console.log("call bootbox hidden : " + modalBody );
+		if (modalBody) {
+			if (!$("body").hasClass("modal-open")) {
+				$("body").addClass("modal-open { overflow-y:scroll; }");
+			}
+		}
+
+		if (focusId && focusId != "" && typeof $("#" + focusId) == 'object') {
+			$("#" + focusId).focus();
+		}
+	});
+
+
+	var box = msgDialog.find('.modal-dialog');
+	msgDialog.css('display', 'block');
+	box.css("margin-top", Math.max(0, ($(window).height() - box.height()) / 2));
+
+}

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="bbs.common">
+
+	<select id="selectFileList" parameterType="int" resultType="HashMap">
+	SELECT
+		FILE_NO
+		, ORG_FILE_NAME
+		, ROUND(FILE_SIZE/1024, 1) FILE_SIZE
+	FROM DASH_BOARD_ATTCHFILE
+	WHERE
+		BOARD_NO = #{boardNo}
+	AND USE_YN = 'Y'
+	</select>
+	
+	<select id="selectFileInfo" parameterType="HashMap" resultType="HashMap">
+	SELECT
+		ORG_FILE_NAME
+		, CHNG_FILE_NAME
+	FROM DASH_BOARD_ATTCHFILE
+	WHERE
+		FILE_NO = #{fileNo}
+	</select>
+
+</mapper>

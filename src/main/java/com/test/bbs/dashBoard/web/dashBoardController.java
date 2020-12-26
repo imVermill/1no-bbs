@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.test.bbs.cmmn.service.commonService;
 import com.test.bbs.dashBoard.PageMaker;
 import com.test.bbs.dashBoard.SearchCriteria;
 import com.test.bbs.dashBoard.service.dashReplyService;
@@ -18,6 +19,7 @@ import com.test.bbs.dashBoard.service.impl.dashBoardVO;
 import com.test.bbs.dashBoard.service.impl.dashReplyVO;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -31,6 +33,9 @@ public class dashBoardController {
 	
 	@Inject
 	dashReplyService dReplyService;
+	
+	@Inject
+	commonService cmmnService;
 	
 	// DashBoard INSERT View
 	@RequestMapping(value = "/dashBoard/writeView.do", method = RequestMethod.GET)
@@ -74,6 +79,9 @@ public class dashBoardController {
 		
 		List<dashReplyVO> dashReplyList = dReplyService.selectReply(param.getBoardNo());
 		model.addAttribute("reply", dashReplyList);
+		
+		List<Map<String, Object>> fileList = cmmnService.selectFileList(param.getBoardNo());
+		model.addAttribute("fileList", fileList);
 		
 		return "/dashBoard/readView";
 	}
