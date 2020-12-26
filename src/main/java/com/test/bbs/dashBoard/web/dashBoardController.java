@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -18,10 +19,13 @@ import com.test.bbs.dashBoard.service.dashBoardService;
 import com.test.bbs.dashBoard.service.impl.dashBoardVO;
 import com.test.bbs.dashBoard.service.impl.dashReplyVO;
 
+import java.io.File;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
 
 @Controller
 public class dashBoardController {
@@ -45,10 +49,10 @@ public class dashBoardController {
 	
 	// DashBoard INSERT
 	@RequestMapping(value = "/dashBoard/write.do", method = RequestMethod.POST)
-	public String write(dashBoardVO param, MultipartHttpServletRequest mphr) throws Exception {
+	public String write(dashBoardVO param, String[] files, String[] fileNm, MultipartHttpServletRequest mphr) throws Exception {
 		logger.info("==> dashBoard/write");
 		
-		dBoardService.boardWrite(param, mphr);
+		dBoardService.boardWrite(param, files, fileNm, mphr);
 		
 		return "redirect:/dashBoard/listView.do";
 	}
@@ -80,7 +84,7 @@ public class dashBoardController {
 		List<dashReplyVO> dashReplyList = dReplyService.selectReply(param.getBoardNo());
 		model.addAttribute("reply", dashReplyList);
 		
-		List<Map<String, Object>> fileList = cmmnService.selectFileList(param.getBoardNo());
+		List<Map<String, Object>> fileList = dBoardService.selectFileList(param.getBoardNo());
 		model.addAttribute("fileList", fileList);
 		
 		return "/dashBoard/readView";
@@ -88,20 +92,31 @@ public class dashBoardController {
 	
 	// DashBoard UPDATE View
 	@RequestMapping(value = "/dashBoard/updateView.do", method = RequestMethod.GET)
-	public String updateView(dashBoardVO param, Model model) throws Exception {
+	public String updateView(dashBoardVO param, @ModelAttribute("scri") SearchCriteria scri, Model model) throws Exception {
 		logger.info("==> dashBoard/updateView");
 		
 		model.addAttribute("update", dBoardService.boardRead(param.getBoardNo()));
+		model.addAttribute("scri", scri);
+		
+		List<Map<String, Object>> fileList = dBoardService.selectFileList(param.getBoardNo());
+		model.addAttribute("fileList", fileList);
 		
 		return "/dashBoard/updateView";
 	}
 	
 	// DashBoard UPDATE
 	@RequestMapping(value = "/dashBoard/update.do", method = RequestMethod.POST)
-	public String update(dashBoardVO param) throws Exception {
+	public String update(dashBoardVO param, @ModelAttribute("scri") SearchCriteria scri, RedirectAttributes rttr,
+			@RequestParam(value = "fileNoDel[]") String[] files, @RequestParam(value = "fileNmDel[]") String[] fileNm,
+			MultipartHttpServletRequest mphr) throws Exception {
 		logger.info("==> dashBoard/update");
 		
-		dBoardService.boardUpdate(param);
+		dBoardService.boardUpdate(param, files, fileNm, mphr);
+		
+		rttr.addAttribute("page", scri.getPage());
+		rttr.addAttribute("perPageNum", scri.getPerPageNum());
+		rttr.addAttribute("searchType", scri.getSearchType());
+		rttr.addAttribute("keyword", scri.getKeyword());
 		
 		return "redirect:/dashBoard/listView.do";
 	}
@@ -184,5 +199,24 @@ public class dashBoardController {
 		rttr.addAttribute("keyword", scri.getKeyword());
 		
 		return "redirect:/dashBoard/readView.do";
+	}
+	
+	@RequestMapping(value = "/fileDown.do")
+	public void fileDown(@RequestParam Map<String, Object> param, HttpServletResponse hsrs) throws Exception {
+		logger.info("==> cmmn/fileDown");
+		
+		Map<String, Object> resultMap = dBoardService.selectFileInfo(param);
+		String orgFileName = (String) resultMap.get("ORG_FILE_NAME");
+		String chngFileName = (String) resultMap.get("CHNG_FILE_NAME");
+		
+		// 파일을 저장했던 위치에서 첨부파일을 읽어 byte[]형식 변환
+		byte fileByte[] = org.apache.commons.io.FileUtils.readFileToByteArray(new File("C:\\DevTools\\downloads" + chngFileName));
+		
+		hsrs.setContentType("application/octet-stream");
+		hsrs.setContentLength(fileByte.length);
+		hsrs.setHeader("Content-Disposition", "attachment; fileName=\"" + URLEncoder.encode(orgFileName, "UTF-8") + "\";");
+		hsrs.getOutputStream().write(fileByte);
+		hsrs.getOutputStream().flush();
+		hsrs.getOutputStream().close();
 	}
 }

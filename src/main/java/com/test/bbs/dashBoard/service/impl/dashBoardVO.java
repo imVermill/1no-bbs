@@ -8,6 +8,7 @@ public class dashBoardVO {
 	private String boardContent;
 	private String boardWriter;
 	private Date regDate;
+	private int views;
 	
 	
 	public int getBoardNo() {
@@ -40,6 +41,11 @@ public class dashBoardVO {
 	public void setRegDate(Date regDate) {
 		this.regDate = regDate;
 	}
-	
+	public int getViews() {
+		return views;
+	}
+	public void setViews(int views) {
+		this.views = views;
+	}
 	
 }

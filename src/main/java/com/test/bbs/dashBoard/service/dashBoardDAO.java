@@ -20,14 +20,14 @@ public class dashBoardDAO {
 	
 	// Dash Board INSERT
 	public void boardWrite(dashBoardVO param) throws Exception {
-		sqlSession.insert("bbs.dashBoard.insert", param);
+		sqlSession.insert("bbs.dashBoard.insertBoard", param);
 	}
 	
 	
 	// Dash Board List SELECT
 	public List<dashBoardVO> boardList(SearchCriteria param) throws Exception {
 		// TODO Auto-generated method stub
-		return sqlSession.selectList("bbs.dashBoard.list", param);
+		return sqlSession.selectList("bbs.dashBoard.selectBoardList", param);
 	}
 	
 	// Dash Board List Count
@@ -38,21 +38,39 @@ public class dashBoardDAO {
 	
 	// Dash Board SELECT
 	public dashBoardVO boardRead(int boardNo) throws Exception {
-		return sqlSession.selectOne("bbs.dashBoard.read", boardNo);
+		return sqlSession.selectOne("bbs.dashBoard.readBoard", boardNo);
 	}
 	
 	// Dash Board UPDATE
 	public void boardUpdate(dashBoardVO param) throws Exception {
-		sqlSession.update("bbs.dashBoard.update", param);
+		sqlSession.update("bbs.dashBoard.updateBoard", param);
 	}
 	
 	// DashBoard DELETE
 	public void boardDelete(int boardNo) throws Exception {
-		sqlSession.delete("bbs.dashBoard.delete", boardNo);
+		sqlSession.delete("bbs.dashBoard.deleteBoard", boardNo);
 	}
 	
+	// DashBoard Views
+	public void updateViews(int boardNo) throws Exception {
+		sqlSession.update("bbs.dashBoard.updateBoardViews", boardNo);
+	}
+	
+	// DashBoard AttchFile
 	public void insertFile(Map<String, Object> param) throws Exception {
 		// TODO Auto-generated method stub
 		sqlSession.insert("bbs.dashBoard.insertFile", param);
+	}
+	public List<Map<String, Object>> selectFileList(int boardNo) throws Exception {
+		// TODO Auto-generated method stub
+		return sqlSession.selectList("bbs.dashBoard.selectFileList", boardNo);
+	}
+	public Map<String, Object> selectFileInfo(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		return sqlSession.selectOne("bbs.dashBoard.selectFileInfo", param);
+	}
+	public void updateFile(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		sqlSession.update("bbs.dashBoard.updateFile", param);
 	}
 }

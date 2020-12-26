@@ -5,11 +5,11 @@
 <mapper namespace="bbs.dashBoard">
 
 	<!-- dashBoard Insert -->
-	<insert id="insert" parameterType="com.test.bbs.dashBoard.service.impl.dashBoardVO" useGeneratedKeys="true" keyProperty="boardNo">
+	<insert id="insertBoard" parameterType="com.test.bbs.dashBoard.service.impl.dashBoardVO" useGeneratedKeys="true" keyProperty="boardNo">
 	<selectKey keyProperty="boardNo" resultType="int" order="BEFORE">
 		SELECT DASH_BOARD_SEQ.NEXTVAL FROM DUAL
     </selectKey>
-	/* bbs.dashBoard.insert */
+	/* bbs.dashBoard.insertBoard */
 	INSERT INTO DASH_BOARD (
 		BOARD_NO
 		, BOARD_TITLE
@@ -26,8 +26,8 @@
 	</insert>
 	
 	<!-- dashBoard Select -->
-	<select id="list" parameterType="com.test.bbs.dashBoard.Criteria" resultType="com.test.bbs.dashBoard.service.impl.dashBoardVO">
-	/* bbs.dashBoard.list */
+	<select id="selectBoardList" parameterType="com.test.bbs.dashBoard.Criteria" resultType="com.test.bbs.dashBoard.service.impl.dashBoardVO">
+	/* bbs.dashBoard.selectBoardList */
 	SELECT
 		ROWNUM AS rnum
 		, BOARD_NO
@@ -50,14 +50,16 @@
 		, a.BOARD_CONTENT
 		, a.BOARD_WRITER
 		, a.REGDATE
+		, a.VIEWS
 	FROM (
 		SELECT
-			BOARD_NO
+			ROWNUM AS rnum
+			, BOARD_NO
 			, BOARD_TITLE
 			, BOARD_CONTENT
 			, BOARD_WRITER
 			, REGDATE
-			, ROWNUM AS rnum
+			, VIEWS
 		FROM DASH_BOARD
 		WHERE 1 = 1
 		<include refid="search"></include>
@@ -69,6 +71,7 @@
 	
 	<!-- dashBoard List Count -->
 	<select id="listCount" resultType="int">
+	/* bbs.dashBoard.listCount */
 	SELECT Count(BOARD_NO)
 	FROM DASH_BOARD
 	WHERE 1 = 1
@@ -77,18 +80,18 @@
 	</select>
 	
 	<sql id="search">
-	<if test="searchType != null">
-		<if test="searchType == 't'.toString()">AND BOARD_TITLE '%' || #{keyword} || '%'</if>
-		<if test="searchType == 'c'.toString()">AND BOARD_CONTENT '%' || #{keyword} || '%'</if>
-		<if test="searchType == 'w'.toString()">AND BOARD_WRITER '%' || #{keyword} || '%'</if>
-		<if test="searchType == 'tc'.toString()">
+	<if test='searchType != null'>
+		<if test='searchType == "t".toString()'>AND BOARD_TITLE '%' || #{keyword} || '%'</if>
+		<if test='searchType == "c".toString()'>AND BOARD_CONTENT '%' || #{keyword} || '%'</if>
+		<if test='searchType == "w".toString()'>AND BOARD_WRITER '%' || #{keyword} || '%'</if>
+		<if test='searchType == "tc".toString()'>
 			AND (BOARD_TITLE '%' || #{keyword} || '%') OR (BOARD_CONTENT '%' || #{keyword} || '%')
 		</if>
 	</if>
 	</sql>
 	
-	<select id="read" parameterType="int" resultType="com.test.bbs.dashBoard.service.impl.dashBoardVO">
-	/* bbs.dashBoard.read */
+	<select id="readBoard" parameterType="int" resultType="com.test.bbs.dashBoard.service.impl.dashBoardVO">
+	/* bbs.dashBoard.readBoard */
 	SELECT 
 		BOARD_NO
 		, BOARD_TITLE
@@ -96,26 +99,40 @@
 		, BOARD_WRITER
 		, REGDATE
 	FROM DASH_BOARD
-	WHERE BOARD_NO = #{boardNo}
+	WHERE 
+		BOARD_NO = #{boardNo}
 	</select>
 	
-	<!-- dashBoard Select -->
-	<update id="update" parameterType="com.test.bbs.dashBoard.service.impl.dashBoardVO">
-	/* bbs.dashBoard.update */
+	<!-- dashBoard Update -->
+	<update id="updateBoard" parameterType="com.test.bbs.dashBoard.service.impl.dashBoardVO">
+	/* bbs.dashBoard.updateBoard */
 	UPDATE DASH_BOARD
 	SET
 		BOARD_TITLE = #{boardTitle}
 		, BOARD_CONTENT = #{boardContent}
-	WHERE BOARD_NO = #{boardNo} 
+	WHERE 
+		BOARD_NO = #{boardNo} 
 	</update>
 	
-	<!-- dashBoard Select -->
-	<delete id="delete" parameterType="int">
-	/* bbs.dashBoard.delete */
+	<!-- dashBoard Delete -->
+	<delete id="deleteBoard" parameterType="int">
+	/* bbs.dashBoard.deleteBoard */
 	DELETE FROM DASH_BOARD
-	WHERE BOARD_NO = #{boardNo}
+	WHERE 
+		BOARD_NO = #{boardNo}
 	</delete>
 	
+	<!-- dashBoard Views -->
+	<update id="updateBoardViews" parameterType="int">
+	/* bbs.dashBoard.updateBoardViews */
+	UPDATE DASH_BOARD
+	SET
+		VIEWS = VIEWS + 1
+	WHERE 
+		BOARD_NO = #{boardNo}
+	</update>
+	
+	<!-- dashBoard Attch File -->
 	<insert id="isnertFile" parameterType="HashMap">
 	/* bbs.dashBoard.insertFile */
 	INSERT INTO DASH_BOARD_ATTCHFILE (
@@ -132,5 +149,37 @@
 		, #{fileSize}	
 	)
 	</insert>
+	
+	<select id="selectFileList" parameterType="int" resultType="HashMap">
+	/* bbs.dashBoard.selectFileList */
+	SELECT
+		FILE_NO
+		, ORG_FILE_NAME
+		, ROUND(FILE_SIZE/1024, 1) FILE_SIZE
+	FROM DASH_BOARD_ATTCHFILE
+	WHERE
+		BOARD_NO = #{boardNo}
+	AND USE_YN = 'Y'
+	</select>
+	
+	<select id="selectFileInfo" parameterType="HashMap" resultType="HashMap">
+	/* bbs.dashBoard.selectFileInfo */
+	SELECT
+		ORG_FILE_NAME
+		, CHNG_FILE_NAME
+	FROM DASH_BOARD_ATTCHFILE
+	WHERE
+		FILE_NO = #{fileNo}
+	</select>
+	
+	<update id="updateFile" parameterType="HashMap">
+	/* bbs.dashBoard.updateFile */
+	UPDATE DASH_BOARD_ATTCHFILE
+	SET
+		USE_YN = 'N'
+	WHERE
+		FILE_NO = #{fileNo}
+	</update>
+	
 	
 </mapper>

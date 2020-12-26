@@ -7,6 +7,8 @@ import javax.annotation.Resource;
 import javax.inject.Inject;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.test.bbs.cmmn.fileUtils;
@@ -25,10 +27,10 @@ public class dashBoardServiceImpl implements dashBoardService {
 	
 	// Dash Board INSERT
 	@Override
-	public void boardWrite(dashBoardVO param, MultipartHttpServletRequest mphr) throws Exception {
+	public void boardWrite(dashBoardVO param, String[] files, String[] fileNm, MultipartHttpServletRequest mphr) throws Exception {
 		dBoardDAO.boardWrite(param);
 		
-		List<Map<String, Object>> list = fileutils.parseInsertFileInfo(param, mphr);
+		List<Map<String, Object>> list = fileutils.parseInsertFileInfo(param, files, fileNm, mphr);
 		int size = list.size();
 		for(int i=0; i<size; i++) {
 			dBoardDAO.insertFile(list.get(i));
@@ -48,21 +50,45 @@ public class dashBoardServiceImpl implements dashBoardService {
 	}
 	
 	// Dash Board SELECT
+	@Transactional(isolation = Isolation.READ_COMMITTED)
 	@Override
 	public dashBoardVO boardRead(int boardNo) throws Exception {
+		dBoardDAO.updateViews(boardNo);
 		return dBoardDAO.boardRead(boardNo);
 	}
 	
 	// Dash Board UPDATE
 	@Override
-	public void boardUpdate(dashBoardVO param) throws Exception {
+	public void boardUpdate(dashBoardVO param, String[] files, String[] fileNm, MultipartHttpServletRequest mphr) throws Exception {
 		dBoardDAO.boardUpdate(param);
+		
+		List<Map<String, Object>> list = fileutils.parseInsertFileInfo(param, files, fileNm, mphr);
+		Map<String, Object> tempMap = null;
+		int size = list.size();
+		for(int i = 0; i < size; i++) {
+			tempMap = list.get(i);
+			if(tempMap.get("IS_NEW").equals("N")) {
+				dBoardDAO.insertFile(tempMap);
+			} else {
+				dBoardDAO.updateFile(tempMap);
+			}
+		}
 	}
 	
 	// DashBoard DELETE
 	@Override
 	public void boardDelete(int boardNo) throws Exception {
 		dBoardDAO.boardDelete(boardNo);
+	}
+	
+	// DashBoard AttchFile
+	@Override
+	public List<Map<String, Object>> selectFileList(int boardNo) throws Exception {
+		return dBoardDAO.selectFileList(boardNo);
+	}
+	@Override
+	public Map<String, Object> selectFileInfo(Map<String, Object> param) throws Exception {
+		return dBoardDAO.selectFileInfo(param);
 	}
 
 }

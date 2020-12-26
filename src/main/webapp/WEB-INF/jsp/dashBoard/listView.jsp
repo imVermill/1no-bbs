@@ -43,15 +43,20 @@ $(document).ready(function(){
 						<th>제목</th>
 						<th>작성자</th>
 						<th>등록일</th>
+						<th>조회수</th>
 					</tr>
 					<c:forEach items="${list}" var="list">
 						<tr>
 							<td class="dt-body-right"><c:out value="${list.boardNo}" /></td>
 							<td class="dt-body-left">
+								<%--
 								<a href="/dashBoard/readView.do?boardNo=${list.boardNo}&page=${scri.page}&perPageNum=${scri.perPageNum}&searchType=${scri.searchType}&keyword=${scri.keyword}"><c:out value="${list.boardTitle}" /></a>
+								--%>
+								<a href="/dashBoard/readView.do?boardNo=${list.boardNo}"><c:out value="${list.boardTitle}" /></a>
 							</td>
 							<td class="dt-body-center"><c:out value="${list.boardWriter}" /></td>
 							<td class="dt-body-center"><fmt:formatDate value="${list.regDate}" pattern="yyyy-MM-dd" /></td>
+							<td class="dt-body-center"><c:out value="${list.views}" /></td>
 						</tr>
 					</c:forEach>
 
