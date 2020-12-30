@@ -1,6 +1,6 @@
 package com.test.bbs.cmmn.service.impl;
 
-public class fileInfoVO {
+public class filesInfoVO {
 	String fileNo;
 	String fileCours;
 	String fileNm;

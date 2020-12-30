@@ -17,6 +17,7 @@
 	
 	<typeAliases>
 		<typeAlias alias="HashMap" type="java.util.HashMap" />
+		<typeAlias alias="fileInfoVO" type="com.test.bbs.cmmn.service.impl.filesInfoVO" />
 	</typeAliases>
 	
 </configuration>

@@ -3,9 +3,9 @@
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="bbs.common">
 
-	<insert id="insertFiles" parameterType="com.test.bbs.cmmn.service.impl.fileInfoVO">
+	<insert id="insertFiles" parameterType="fileInfoVO">
    	/* [bbs.common.insertFiles] 파일 등록 */
-	<selectKey keyProperty="fileNo" resultType="String" order="BEFORE">
+	<selectKey keyProperty="fileNo" resultType="string" order="BEFORE">
 		SELECT NVL(MAX(CAST(FILE_NO AS INT)),0) + 1 FROM TN_FILE_MANAGE
 	</selectKey>
 	INSERT INTO TN_FILE_MANAGE (

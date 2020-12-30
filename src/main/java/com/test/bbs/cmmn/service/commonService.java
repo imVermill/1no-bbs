@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.test.bbs.cmmn.service.impl.fileInfoVO;
+import com.test.bbs.cmmn.service.impl.filesInfoVO;
 
 public interface commonService {
 
@@ -19,7 +19,7 @@ public interface commonService {
 	 * @param HttpServletRequest 파일정보가 담긴 파라미터
 	 * @return
 	 */
-	public List<fileInfoVO> insertFiles(List<MultipartFile> files, String userId, String uploadTy) throws Exception;
+	public List<filesInfoVO> insertFiles(List<MultipartFile> files, String userId, String uploadTy) throws Exception;
 
 	/**
 	 * 업로드파일의 System Program 정보 수정

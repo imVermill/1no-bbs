@@ -21,7 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.test.bbs.cmmn.service.commonService;
-import com.test.bbs.cmmn.service.impl.fileInfoVO;
+import com.test.bbs.cmmn.service.impl.filesInfoVO;
 import com.test.bbs.member.service.impl.memberVO;
 
 @Controller
@@ -37,7 +37,7 @@ public class commonController {
 	@ResponseBody
 	public HashMap<String, Object> fileUpload(HttpServletRequest req, Model model) throws Exception {
 
-		List<fileInfoVO> fileNoList = new ArrayList<fileInfoVO>();
+		List<filesInfoVO> fileNoList = new ArrayList<filesInfoVO>();
 
 		HashMap<String, Object> resultMap = new HashMap<>();
 
@@ -71,7 +71,7 @@ public class commonController {
 		List<MultipartFile> files = new ArrayList<MultipartFile>();
 		files.add(upload);
 
-		List<fileInfoVO> uploadVo = new ArrayList<>();
+		List<filesInfoVO> uploadVo = new ArrayList<>();
 
 		memberVO memberVo = (memberVO) req.getSession().getAttribute("loginVO");
 		uploadVo = cmmnService.insertFiles(files, memberVo.getUserId(), "ckeditor");

@@ -18,6 +18,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,9 @@ import org.springframework.web.multipart.MultipartFile;
 import com.test.bbs.cmmn.service.commonDAO;
 import com.test.bbs.cmmn.service.commonService;
 import com.test.bbs.cmmn.web.commonController;
+
+import net.sf.jxls.exception.ParsePropertyException;
+import net.sf.jxls.transformer.XLSTransformer;
 
 @Service
 public class commonServiceImpl implements commonService {
@@ -42,7 +46,7 @@ public class commonServiceImpl implements commonService {
 	 * @return
 	 */
 	@Override
-	public List<fileInfoVO> insertFiles(List<MultipartFile> files, String userId, String uploadTy) throws Exception {
+	public List<filesInfoVO> insertFiles(List<MultipartFile> files, String userId, String uploadTy) throws Exception {
 
 		String extSnList = "xlsx|xls|hwp|doc|ppt|pptx|pdf|txt|jpg|png|gif|bmp|zip|7z|rar";
 		for(MultipartFile file : files) {
@@ -73,11 +77,11 @@ public class commonServiceImpl implements commonService {
 		}
 
 
-		List<fileInfoVO> fileInfoList = new ArrayList<fileInfoVO>();
+		List<filesInfoVO> fileInfoList = new ArrayList<filesInfoVO>();
 		for(MultipartFile file : files) {
 			if (!"".equals(file.getOriginalFilename())) {
 				String fileName = file.getOriginalFilename();
-				fileInfoVO fileInfoVo = new fileInfoVO();
+				filesInfoVO fileInfoVo = new filesInfoVO();
 
 				//밀리세컨드로 현재시간 구해서 파일명에 적용
 				long time = System.currentTimeMillis();
@@ -155,12 +159,12 @@ public class commonServiceImpl implements commonService {
 	 */
 	@Override
 	public void excelDownload(HttpServletRequest request, HttpServletResponse response, Map<String, Object> bean, String fileName, String templateFile) throws Exception {
-		String tempPath = request.getSession().getServletContext().getRealPath("/WEB-INF/template");
+		String tempPath = request.getSession().getServletContext().getRealPath("/WEB-INF/template/EL_0001.xlsx");
         try {
             InputStream is = new BufferedInputStream(new FileInputStream(tempPath + "\\" + templateFile));
             XLSTransformer xls = new XLSTransformer();
             Workbook workbook;
-			workbook = xls.transformXLS(is, bean);
+            workbook = xls.transformXLS(is, bean);
 			
 			String header =request.getHeader("User-Agent");
 			String encodingFileName = "";

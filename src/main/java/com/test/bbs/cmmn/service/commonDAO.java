@@ -9,7 +9,7 @@ import javax.inject.Inject;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 
-import com.test.bbs.cmmn.service.impl.fileInfoVO;
+import com.test.bbs.cmmn.service.impl.filesInfoVO;
 
 @Repository
 public class commonDAO {
@@ -23,7 +23,7 @@ public class commonDAO {
 	 * @return
 	 * @exception Exception
 	 */
-	public int insertFiles(fileInfoVO fileInfoVo) throws Exception {
+	public int insertFiles(filesInfoVO fileInfoVo) throws Exception {
 		return sqlSession.insert("bbs.common.insertFiles", fileInfoVo);
 	}
 
