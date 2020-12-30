@@ -12,12 +12,9 @@ $(document).ready(function(){
 
 		// If it's a function
 		if ( isFunction( params ) ) {
-
-			// We assume that it's the callback
+		
 			callback = params;
 			params = undefined;
-
-			// Otherwise, build a param string
 		} else if ( params && typeof params === "object" ) {
 			type = "POST";
 		}
@@ -34,10 +31,9 @@ $(document).ready(function(){
 				dataType: "html",
 				data: params
 			} ).done( function( responseText ) {
-
 				// Save response for use in complete callback
 				response = arguments;
-
+				
 				self.html(responseText);
 
 				// If the request succeeds, this function gets "data", "status", "jqXHR"
@@ -144,16 +140,12 @@ function sendAjax(reqUrl, reqData, reqType, callback){
     			return rtnVal;
     		}
         })
-    	.always(function() {
-
-    	});
+        .always(function() { });
 
 }
 
 // hide modal function
 function hideModal(modalId, callback, data) {
-	
-	// init modal hide info
     hideCallback = null;
     hideData = null;
 
@@ -161,7 +153,6 @@ function hideModal(modalId, callback, data) {
     if (!objModal) {
     	return ;
     }
-
 	if (typeof callback == "function") {
 		hideCallback = callback;
 		if (data) {
@@ -190,7 +181,6 @@ function showModalUrl(modalId, reqUrl, data, callback) {
     if (!objDialog) {
     	return ;
     }
-
 	if (typeof callback == "function") {
 		showCallback = callback;
 		if (data) {
@@ -339,4 +329,51 @@ function alertMsg(sType, sMsg, sCallback, sSize, focusId) {
 	msgDialog.css('display', 'block');
 	box.css("margin-top", Math.max(0, ($(window).height() - box.height()) / 2));
 
+}
+
+// DataTables Init.
+function setDatatableDefault() {
+	$.extend( true, $.fn.dataTable.defaults, {
+	
+		dom:"<'row'<'col-sm-12'l>>" +
+			"<'table-cont'tr>" +
+			"<'row'<'col-sm-8' i><'col-sm-4 text-right m-t-5'B>>" +
+			"<'row'<'col-sm-12'p>>",
+		paging:		true,
+	    bLengthChange: false,	// page length change dropdown hide
+	    lengthMenu:	[[10, 30, 50], [10, 30, 50]],
+	    ordering:	false,
+	    info:		false,
+	    searching:	false,
+	    select : {
+	    	style: 'single',
+	    	items: 'row',
+	    	info: false
+	    },
+	    language: {
+	        "info" : "<p>총 <span> _TOTAL_ </span> 건</p> ",
+	        "infoEmpty":	  "0 / 0",
+	        "infoFiltered":   "(총 건수 : _MAX_)",
+	        "lengthMenu":	  "목록 개수 : _MENU_ ",
+	        "decimal":        "",
+	        "emptyTable":     "조회된 정보가 없습니다",
+	        "infoPostFix":    "",
+	        "thousands":      ",",
+	        "loadingRecords": "Loading...",
+	        "processing":     "Processing...",
+	        "search":         "Search:",
+	        "zeroRecords":    "일치하는 정보가 없습니다",
+	        "paginate": {
+	            "first":      "First",
+	            "last":       "Last",
+	            "next":       "Next",
+	            "previous":   "Previous"
+	        },
+	        "aria": {
+	            "sortAscending":  ": activate to sort column ascending",
+	            "sortDescending": ": activate to sort column descending"
+	        }
+		},
+		defaultContent: ""
+	} );
 }

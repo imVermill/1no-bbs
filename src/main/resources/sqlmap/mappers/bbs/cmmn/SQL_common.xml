@@ -1,7 +1,94 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper
-	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="bbs.common">
 
+	<insert id="insertFiles" parameterType="com.test.bbs.cmmn.service.impl.fileInfoVO">
+   	/* [bbs.common.insertFiles] 파일 등록 */
+	<selectKey keyProperty="fileNo" resultType="string" order="BEFORE">
+		SELECT NVL(MAX(CAST(FILE_NO AS INT)),0) + 1 FROM TN_FILE_MANAGE
+	</selectKey>
+	INSERT INTO TN_FILE_MANAGE (
+		FILE_NO
+		, FILE_COURS
+		, FILE_NM
+		, FILE_EXTSN
+		, CHANGE_FILE_NM
+		, CHANGE_FILE_EXTSN
+		, FRST_REGIST_DT
+		, FRST_REGISTER_ID
+		, LAST_UPDT_DT
+		, LAST_UPDUSR_ID
+		, FILEMG
+		, UPLOAD_TY
+	) VALUES (
+		#{fileNo}
+		, #{fileCours}
+		, #{fileNm}
+		, #{fileExtsn}
+		, #{changeFileNm}
+		, #{changeFileExtsn}
+		, SYS_DATETIME
+		, #{frstRegisterId}
+		, SYS_DATETIME
+		, #{lastUpdusrId}
+		, #{fileMg}
+		, #{uploadTy}
+	)
+	</insert>
+    
+	<update id="updateFileSysProgrm" parameterType="HashMap">
+	/* [bbs.common.updateFileSysProgrm] 업로드파일의 System Program 정보 수정 */
+	UPDATE tn_file_manage 
+	SET
+		sys_progrm_nm = #{sysProgrmNm}
+        , sys_progrm_no = #{sysProgrmNo}
+        , use_yn = 'Y'
+	WHERE
+		file_no= #{fileNo}
+    </update>
+    
+    <update id="updateFileDelete" parameterType="HashMap">
+	/* [bbs.common.updateFileDelete] 업로드파일정보 삭제처리 */
+	UPDATE tn_file_manage
+	SET
+		use_yn = 'N'
+    WHERE
+    	file_no= #{fileNo}
+        <if test='sysProgrmNm != null and sysProgrmNm != ""'>
+        	AND sys_progrm_nm = #{sysProgrmNm}
+        </if>
+        <if test='sysProgrmNo != null and sysProgrmNo != ""'>
+        	AND sys_progrm_no = #{sysProgrmNo}
+        </if>
+    </update>
+
+    <delete id="deleteFileManage" parameterType="HashMap">
+	/* [bbs.common.deleteFileManage] 업로드파일정보 완전삭제 */
+    DELETE FROM tn_file_manage
+    WHERE 
+    	sys_progrm_nm = #{sysProgrmNm}
+		AND sys_progrm_no = #{sysProgrmNo}
+    </delete>
+
+    <select id="selectFileDown" parameterType="HashMap" resultType="java.util.Map">
+	/* [bbs.common.selectFileDown] 첨부파일 다운로드용 파일정보 조회 */
+    SELECT
+        FILE_NO
+        , FILE_COURS
+        , FILE_NM
+        , FILE_EXTSN
+        , CHANGE_FILE_NM
+        , CHANGE_FILE_EXTSN
+        , FILEMG AS FILE_SIZE
+        , UPLOAD_TY
+    FROM
+        TN_FILE_MANAGE
+    WHERE
+    	FILE_NO = #{fileNo}
+        <if test='uploadTy != null and uploadTy != ""'>
+        	AND UPLOAD_TY = #{uploadTy}
+        </if>
+    </select>
+    
 </mapper>

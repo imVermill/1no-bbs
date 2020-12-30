@@ -23,7 +23,7 @@ $(document).ready(function(){
 	// 파일 업로드 전송 호출
 	$fileForm.ajaxForm({
 		contentType : false,
-		url : "/hsmsFileUpload.do",
+		url : "/fileUpload.do",
         processData : false,
         async : false,
         enctype : "multipart/form-data",
@@ -99,27 +99,27 @@ function fileListUpload(files){
     	if(extSnList.indexOf(extSn) < 0){
     		extSnCnt++;
     	}else{
-        	var fileSerial = "file_"+fileCnt;
+        	var fileSerial = "file_" + fileCnt;
         	var fileNo = "";
         	// 수정 시 파일삭제를 위한 번호 입력
         	if(file.fileNo != undefined){
-        		fileNo = "fileNo=\""+file.fileNo+"\"";
+        		fileNo = "fileNo=\"" + file.fileNo + "\"";
         	}else{
         		// 파일 상세 보기에서는 버퍼에 넣을 필요가 없으므로 등록이나 추가 시에만 사용
         		fileBuffer[fileSerial] = file;
         	}
             // TODO SKM 수정할때 다운로드 기능(권한고려)
-        	fileListHtml += "<div class='fileLine' id='"+fileSerial+"'>";
-        	fileListHtml += " <span class='fileSelect'><input type='checkbox' id='fileChk_"+fileCnt+"' "+fileNo+" value='"+fileSerial+"' onclick='fileCheck(this)'></span>";
-        	fileListHtml += " <span class='fileName'  "+ fileNo +"><label style='width:auto;' for='"+fileSerial+"'>"+file.name+"</label></span>";
+        	fileListHtml += "<div class='fileLine' id='" + fileSerial + "'>";
+        	fileListHtml += " <span class='fileSelect'><input type='checkbox' id='fileChk_" + fileCnt + "' " + fileNo + " value='" + fileSerial + "' onclick='fileCheck(this)'></span>";
+        	fileListHtml += " <span class='fileName'  " + fileNo + "><label style='width:auto;' for='" + fileSerial + "'>" + file.name + "</label></span>";
         	if(file.size > 10000000000){
-        		fileListHtml += " <span class='fileSize'>"+Math.round(file.size/1024/1024/1024)+"GB</span>";
+        		fileListHtml += " <span class='fileSize'>" + Math.round(file.size/1024/1024/1024)+"GB</span>";
         	}else if(file.size > 10000000){
-        		fileListHtml += " <span class='fileSize'>"+Math.round(file.size/1024/1024)+"MB</span>";
+        		fileListHtml += " <span class='fileSize'>" + Math.round(file.size/1024/1024)+"MB</span>";
         	}else if(file.size > 1000){//KB
-        		fileListHtml += " <span class='fileSize'>"+Math.round(file.size/1024)+"KB</span>";
+        		fileListHtml += " <span class='fileSize'>" + Math.round(file.size/1024)+"KB</span>";
         	}else{
-        		fileListHtml += " <span class='fileSize'>"+file.size+"Byte</span>";
+        		fileListHtml += " <span class='fileSize'>" + file.size+"Byte</span>";
         	}
         	fileListHtml += "</div>";
         	fileCnt++;
@@ -175,7 +175,7 @@ function fileDel(){
 	if($('#fileListZone .fileLine').length == 0){
 		$('#fileUploadModule .fileListForm #fileListZone').html("<p class='fileDrag'>파일을 드래그 해주세요.</p>");
 	}
-	$('#fileAllSelect').prop("checked",false);
+	$('#fileAllSelect').prop("checked", false);
 	$('#fileTotalCnt').html("총 " + $('#fileListZone .fileLine').length + "개 파일");
 }
 
@@ -183,25 +183,25 @@ function fileDel(){
 function fileDropDown(){
 	var dropZone = $("#fileUploadModule #dropZone");
     //Drag기능
-    dropZone.on('dragenter',function(e){
+    dropZone.on('dragenter', function(e) {
         e.stopPropagation();
         e.preventDefault();
         // 드롭다운 영역 css
         dropZone.css('background-color','#E3F2FC');
     });
-    dropZone.on('dragleave',function(e){
+    dropZone.on('dragleave', function(e) {
         e.stopPropagation();
         e.preventDefault();
         // 드롭다운 영역 css
         dropZone.css('background-color','#FFFFFF');
     });
-    dropZone.on('dragover',function(e){
+    dropZone.on('dragover', function(e) {
         e.stopPropagation();
         e.preventDefault();
         // 드롭다운 영역 css
         dropZone.css('background-color','#E3F2FC');
     });
-    dropZone.on('drop',function(e){
+    dropZone.on('drop', function(e){
         e.preventDefault();
         // 드롭다운 영역 css
         dropZone.css('background-color','#FFFFFF');
@@ -213,7 +213,7 @@ function fileDropDown(){
                 return;
             }
             fileListUpload(files);
-        }else{
+        } else {
             alert("ERROR");
         }
     });

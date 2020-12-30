@@ -27,6 +27,14 @@ $(document).ready(function(){
 			location.href = "/dashBoard/writeView.do";
 		} 
 	})
+	
+	$('#bbsData').DataTable( {
+		"paging" : true,
+        "ordering" : false,
+        "info" : true,
+        "lengthMenu" : [[10, 30, 50, -1], [10, 30, 50, "All"]],
+		
+    } );
 })
 </script>
 <body>
@@ -37,6 +45,8 @@ $(document).ready(function(){
 
 		<section id="container">
 			<form role="form" method="get">
+				<table class="table table-hover" id="bbsData">
+				</table>
 				<table class="table table-hover">
 					<tr>
 						<th>번호</th>

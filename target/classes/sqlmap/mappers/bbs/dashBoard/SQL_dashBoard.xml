@@ -99,7 +99,8 @@
 		, BOARD_WRITER
 		, REGDATE
 	FROM DASH_BOARD
-	WHERE BOARD_NO = #{boardNo}
+	WHERE 
+		BOARD_NO = #{boardNo}
 	</select>
 	
 	<!-- dashBoard Update -->
@@ -109,14 +110,16 @@
 	SET
 		BOARD_TITLE = #{boardTitle}
 		, BOARD_CONTENT = #{boardContent}
-	WHERE BOARD_NO = #{boardNo} 
+	WHERE 
+		BOARD_NO = #{boardNo} 
 	</update>
 	
 	<!-- dashBoard Delete -->
 	<delete id="deleteBoard" parameterType="int">
 	/* bbs.dashBoard.deleteBoard */
 	DELETE FROM DASH_BOARD
-	WHERE BOARD_NO = #{boardNo}
+	WHERE 
+		BOARD_NO = #{boardNo}
 	</delete>
 	
 	<!-- dashBoard Views -->
@@ -125,8 +128,8 @@
 	UPDATE DASH_BOARD
 	SET
 		VIEWS = VIEWS + 1
-	WHERE
-		BOARD_NO = #[boardNo]
+	WHERE 
+		BOARD_NO = #{boardNo}
 	</update>
 	
 	<!-- dashBoard Attch File -->
@@ -175,7 +178,7 @@
 	SET
 		USE_YN = 'N'
 	WHERE
-		FILE_NO = #[fileNo]
+		FILE_NO = #{fileNo}
 	</update>
 	
 	
