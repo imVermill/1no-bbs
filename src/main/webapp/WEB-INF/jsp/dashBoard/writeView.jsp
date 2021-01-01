@@ -70,8 +70,10 @@ function writeBoard() {
 						</tr>
 						<tr>
 							<td>
-								<!-- <input type="file" id="file" name="file" /> -->
+								<%-- include fileUpload --%>
 								<%@ include file="/WEB-INF/jsp/include/fileUpload.jsp" %>
+								<!-- <input type="file" id="file" name="file" /> -->
+									
 							</td>
 						</tr>
 						<tr>

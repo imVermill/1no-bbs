@@ -40,9 +40,9 @@ function isChkedId() {
 		, success : function(data) {
 			if (!data) {
 				$("#chkUserId").attr("value", "Y");
-				alert("사용 가능한 아이디입니다.");
+				alertMsg("alert", "사용 가능한 아이디입니다.");
 			} else {
-				alert("중복된 아이디입니다.");
+				alertMsg("alert", "중복된 아이디입니다.");
 				return false;
 			}
 		}

@@ -29,13 +29,44 @@ $(document).ready(function(){
 	})
 	
 	$('#bbsData').DataTable( {
-		"paging" : true,
-        "ordering" : false,
-        "info" : true,
-        "lengthMenu" : [[10, 30, 50, -1], [10, 30, 50, "All"]],
-		
+		paging : true,
+        ordering : false,
+        info : true,
+        lengthMenu : [[10, 30, 50, -1], [10, 30, 50, "All"]],
+        scrollX : true,
+        scrollY : 200,
+        ajax : {
+        	 "type" : "POST"
+        	,"url" : "<c:url value='/dashBoard/listAjax.do'/>"
+        	,"dataType" : "JSON"
+        },
+        columns : [
+        	 {"data" : "boardNo", 		"name" : "boardNo", 		"title" : "번호", 		"width" : ""}
+        	,{"data" : "boardTitle", 	"name" : "boardTitle", 		"title" : "제목", 		"width" : ""}
+        	,{"data" : "boardWriter", 	"name" : "boardWriter", 	"title" : "작성자", 	"width" : ""}
+        	,{"data" : "regDate", 		"name" : "regDate", 		"title" : "등록일", 	"width" : ""}
+        	,{"data" : "views", 		"name" : "views", 			"title" : "조회수", 	"width" : ""}
+        ],
+        columnDefs : [
+        	 {targets : [1], className : "dt-body-left"}
+        	,{targets : [0], className : "dt-body-right"}
+        	,{targets : [2,3,4], className : "dt-body-center"}
+        ],
+        buttons : [
+        	'copy', 'csv', 'excel'
+        ]
+        
     } );
+	
+	$('#bbsData tbody').on('dblclick', 'tr', function() {
+		var data = $('#bbsData').DataTable().row(this).data();
+		
+		var boardNo = data.boardNo;
+		//검색함수
+		console.log(boardNo);
+	})
 })
+
 </script>
 <body>
 	<div class="container">
@@ -47,66 +78,6 @@ $(document).ready(function(){
 			<form role="form" method="get">
 				<table class="table table-hover" id="bbsData">
 				</table>
-				<table class="table table-hover">
-					<tr>
-						<th>번호</th>
-						<th>제목</th>
-						<th>작성자</th>
-						<th>등록일</th>
-						<th>조회수</th>
-					</tr>
-					<c:forEach items="${list}" var="list">
-						<tr>
-							<td class="dt-body-right"><c:out value="${list.boardNo}" /></td>
-							<td class="dt-body-left">
-								<%--
-								<a href="/dashBoard/readView.do?boardNo=${list.boardNo}&page=${scri.page}&perPageNum=${scri.perPageNum}&searchType=${scri.searchType}&keyword=${scri.keyword}"><c:out value="${list.boardTitle}" /></a>
-								--%>
-								<a href="/dashBoard/readView.do?boardNo=${list.boardNo}"><c:out value="${list.boardTitle}" /></a>
-							</td>
-							<td class="dt-body-center"><c:out value="${list.boardWriter}" /></td>
-							<td class="dt-body-center"><fmt:formatDate value="${list.regDate}" pattern="yyyy-MM-dd" /></td>
-							<td class="dt-body-center"><c:out value="${list.views}" /></td>
-						</tr>
-					</c:forEach>
-
-				</table>
-				<div class="search row">
-					<div class="col-xs-2 col-sm-2">
-						<select name="searchType" class="form-control">
-							<option value="n" <c:out value="${scri.searchType == null ? 'selected' : ''}"/>>-----</option>
-							<option value="t" <c:out value="${scri.searchType eq 't' ? 'selected' : ''}"/>>제목</option>
-							<option value="c" <c:out value="${scri.searchType eq 'c' ? 'selected' : ''}"/>>내용</option>
-							<option value="w" <c:out value="${scri.searchType eq 'w' ? 'selected' : ''}"/>>작성자</option>
-							<option value="tc" <c:out value="${scri.searchType eq 'tc' ? 'selected' : ''}"/>>제목+내용</option>
-						</select>
-					</div>
-					<div class="col-xs-10 col-sm-10">
-						<div class="input-group">
-							<input type="text" class="form-control"  id="keywordInput" name="keywordInput" value="${scri.keyword}" /> 
-							<span class="input-group-btn">
-								<button type="button" class="btn btn-secondary" id="btnSearch" name="btnSearch">검색</button>
-							</span>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-offset-6">
-					<ul class="pagination">
-						<c:if test="${pageMaker.prev}">
-							<li><a href="list${pageMaker.makeSearch(pageMaker.startPage - 1)}">이전</a></li>
-						</c:if>
-						<c:forEach begin="${pageMaker.startPage}" end="${pageMaker.endPage}" var="idx">
-							<li<c:out value="${pageMaker.cri.page == idx ? 'class=info' : ''}" />>
-								<a href="list${pageMaker.makeSearch(idx)}">${idx}</a>
-							</li>
-						</c:forEach>
-						<c:if test="${pageMaker.next && pageMaker.endPage > 0}">
-							<li><a href="list${pageMaker.makeSearch(pageMaker.endPage + 1)}">다음</a></li>
-						</c:if>
-					</ul>
-					
-					<button type="button" class="btn btn-primary" id="btnWrite" name="btnWrite">작성</button>
-				</div>
 			</form>
 		</section>
 		<hr />

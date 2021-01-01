@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -21,10 +22,12 @@ import com.test.bbs.dashBoard.service.impl.dashReplyVO;
 
 import java.io.File;
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Controller
@@ -49,10 +52,10 @@ public class dashBoardController {
 	
 	// DashBoard INSERT
 	@RequestMapping(value = "/dashBoard/write.do", method = RequestMethod.POST)
-	public String write(dashBoardVO param, String[] files, String[] fileNm, MultipartHttpServletRequest mphr) throws Exception {
+	public String write(dashBoardVO param, String[] files, String[] fileNm, MultipartHttpServletRequest request) throws Exception {
 		logger.info("==> dashBoard/write");
 		
-		dBoardService.boardWrite(param, files, fileNm, mphr);
+		dBoardService.boardWrite(param, files, fileNm, request);
 		
 		return "redirect:/dashBoard/listView.do";
 	}
@@ -70,7 +73,18 @@ public class dashBoardController {
 		
 		model.addAttribute("pageMaker", pageMaker);
 		
-		return "/dashBoard/listView";
+		return "/dashBoard/listView_bak";
+	}
+	
+	@RequestMapping(value = "/dashBoard/listAjax.do")
+	 public @ResponseBody Object listAjax(HttpServletRequest request, HttpServletResponse response, @ModelAttribute("scri") SearchCriteria param) throws Exception {
+		Map<String, Object> boardList = new HashMap<String, Object>();
+		boardList.put("data", dBoardService.boardList(param));
+	  
+		Object result = boardList;
+		
+		logger.debug("==> dashBoard/listAjax" + result);
+		return result;
 	}
 	
 	// DashBoard SELECT
@@ -108,10 +122,10 @@ public class dashBoardController {
 	@RequestMapping(value = "/dashBoard/update.do", method = RequestMethod.POST)
 	public String update(dashBoardVO param, @ModelAttribute("scri") SearchCriteria scri, RedirectAttributes rttr,
 			@RequestParam(value = "fileNoDel[]") String[] files, @RequestParam(value = "fileNmDel[]") String[] fileNm,
-			MultipartHttpServletRequest mphr) throws Exception {
+			MultipartHttpServletRequest request) throws Exception {
 		logger.info("==> dashBoard/update");
 		
-		dBoardService.boardUpdate(param, files, fileNm, mphr);
+		dBoardService.boardUpdate(param, files, fileNm, request);
 		
 		rttr.addAttribute("page", scri.getPage());
 		rttr.addAttribute("perPageNum", scri.getPerPageNum());
@@ -202,7 +216,7 @@ public class dashBoardController {
 	}
 	
 	@RequestMapping(value = "/fileDown.do")
-	public void fileDown(@RequestParam Map<String, Object> param, HttpServletResponse hsrs) throws Exception {
+	public void fileDown(@RequestParam Map<String, Object> param, HttpServletResponse response) throws Exception {
 		logger.info("==> cmmn/fileDown");
 		
 		Map<String, Object> resultMap = dBoardService.selectFileInfo(param);
@@ -212,11 +226,11 @@ public class dashBoardController {
 		// 파일을 저장했던 위치에서 첨부파일을 읽어 byte[]형식 변환
 		byte fileByte[] = org.apache.commons.io.FileUtils.readFileToByteArray(new File("C:\\DevTools\\downloads" + chngFileName));
 		
-		hsrs.setContentType("application/octet-stream");
-		hsrs.setContentLength(fileByte.length);
-		hsrs.setHeader("Content-Disposition", "attachment; fileName=\"" + URLEncoder.encode(orgFileName, "UTF-8") + "\";");
-		hsrs.getOutputStream().write(fileByte);
-		hsrs.getOutputStream().flush();
-		hsrs.getOutputStream().close();
+		response.setContentType("application/octet-stream");
+		response.setContentLength(fileByte.length);
+		response.setHeader("Content-Disposition", "attachment; fileName=\"" + URLEncoder.encode(orgFileName, "UTF-8") + "\";");
+		response.getOutputStream().write(fileByte);
+		response.getOutputStream().flush();
+		response.getOutputStream().close();
 	}
 }

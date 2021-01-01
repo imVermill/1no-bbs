@@ -27,10 +27,10 @@ public class dashBoardServiceImpl implements dashBoardService {
 	
 	// Dash Board INSERT
 	@Override
-	public void boardWrite(dashBoardVO param, String[] files, String[] fileNm, MultipartHttpServletRequest mphr) throws Exception {
+	public void boardWrite(dashBoardVO param, String[] files, String[] fileNm, MultipartHttpServletRequest request) throws Exception {
 		dBoardDAO.boardWrite(param);
 		
-		List<Map<String, Object>> list = fileutils.parseInsertFileInfo(param, files, fileNm, mphr);
+		List<Map<String, Object>> list = fileutils.parseInsertFileInfo(param, files, fileNm, request);
 		int size = list.size();
 		for(int i=0; i<size; i++) {
 			dBoardDAO.insertFile(list.get(i));
@@ -59,10 +59,10 @@ public class dashBoardServiceImpl implements dashBoardService {
 	
 	// Dash Board UPDATE
 	@Override
-	public void boardUpdate(dashBoardVO param, String[] files, String[] fileNm, MultipartHttpServletRequest mphr) throws Exception {
+	public void boardUpdate(dashBoardVO param, String[] files, String[] fileNm, MultipartHttpServletRequest request) throws Exception {
 		dBoardDAO.boardUpdate(param);
 		
-		List<Map<String, Object>> list = fileutils.parseInsertFileInfo(param, files, fileNm, mphr);
+		List<Map<String, Object>> list = fileutils.parseInsertFileInfo(param, files, fileNm, request);
 		Map<String, Object> tempMap = null;
 		int size = list.size();
 		for(int i = 0; i < size; i++) {

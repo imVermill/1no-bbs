@@ -27,10 +27,11 @@ public class memberController {
 	@Inject
 	memberService mService;
 	
-	// member signUp Request GET / POST
-	@RequestMapping(value="/sign/signUp.do", method=RequestMethod.GET)
-	public void signUp() throws Exception {
-		logger.info("getRegister");
+	@RequestMapping(value = "/sign/signUp.do", method=RequestMethod.GET)
+	public String signUp() throws Exception {
+		logger.info("==> getRegister signUp");
+		
+		return "/sign/signUp";
 	}
 
 	@RequestMapping(value="/sign/signUpAjax.do", method=RequestMethod.POST)
@@ -55,7 +56,14 @@ public class memberController {
 	}
 	
 	// member signIn
-	@RequestMapping(value="/sign/signIn.do", method=RequestMethod.POST)
+	@RequestMapping(value = "/sign/signIn.do", method=RequestMethod.GET)
+	public String signIn() throws Exception {
+		logger.info("==> getRegister signIn");
+		
+		return "/sign/signIn";
+	}
+	
+	@RequestMapping(value="/sign/signInAjax.do", method=RequestMethod.POST)
 	public String signIn(memberVO param, HttpSession httpSession, RedirectAttributes rttr) throws Exception {
 		logger.info("postLogin");
 		
@@ -85,7 +93,7 @@ public class memberController {
 	@RequestMapping(value="/sign/signEdit.do", method=RequestMethod.GET)
 	public String signEdit(memberVO param, HttpSession httpSession) throws Exception {
 		
-		return "/sign/signEdit";
+		return "/sign/signEdit.do";
 	}
 	
 	@RequestMapping(value="/sign/signEditAjax.do", method=RequestMethod.POST)
@@ -101,7 +109,7 @@ public class memberController {
 	@RequestMapping(value="/sign/signDrawal.do", method=RequestMethod.GET)
 	public String signDrawalView() throws Exception {
 		
-		return "/sign/signDrawal";
+		return "/sign/signDrawal.do";
 	}
 	
 	@RequestMapping(value="/sign/signDrawalAjax.do", method=RequestMethod.POST)

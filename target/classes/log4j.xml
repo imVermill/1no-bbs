@@ -16,22 +16,18 @@
 	</logger>
 	
 	<!-- 3rdparty Loggers -->
-	<logger name="org.springframework.core">
+	<logger name="org.springframework" additivity="false">
 		<level value="info" />
 	</logger>
 	
-	<logger name="org.springframework.beans">
-		<level value="info" />
+	<logger name="java.sql" additivity="false">
+		<level value="debug" />
+		<appender-ref ref="console"/> 
 	</logger>
-	
-	<logger name="org.springframework.context">
-		<level value="info" />
+	<logger name="org.mybatis" additivity="false">
+		<level value="debug" />
+		<appender-ref ref="console"/> 
 	</logger>
-
-	<logger name="org.springframework.web">
-		<level value="info" />
-	</logger>
-	
 	<!-- log SQL with timing information, post execution -->
 	<logger name="jdbc.sqltiming" additivity="false">
 		<level value="warn" />

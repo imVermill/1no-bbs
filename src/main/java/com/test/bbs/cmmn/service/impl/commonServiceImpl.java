@@ -148,7 +148,7 @@ public class commonServiceImpl implements commonService {
 	 * @return
 	 */
 	@Override
-	public Map selectFileDown(HashMap<String, Object> param) throws Exception {
+	public Map<String, Object> selectFileDown(HashMap<String, Object> param) throws Exception {
 		return cmmnDAO.selectFileDown(param);
 	}
 
@@ -159,7 +159,7 @@ public class commonServiceImpl implements commonService {
 	 */
 	@Override
 	public void excelDownload(HttpServletRequest request, HttpServletResponse response, Map<String, Object> bean, String fileName, String templateFile) throws Exception {
-		String tempPath = request.getSession().getServletContext().getRealPath("/WEB-INF/template/EL_0001.xlsx");
+		String tempPath = request.getSession().getServletContext().getRealPath("/WEB-INF/upload/");
         try {
             InputStream is = new BufferedInputStream(new FileInputStream(tempPath + "\\" + templateFile));
             XLSTransformer xls = new XLSTransformer();

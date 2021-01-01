@@ -13,7 +13,7 @@ import com.test.bbs.dashBoard.service.impl.dashBoardVO;
 public interface dashBoardService {
 	
 	// Dash Board INSERT
-	public void boardWrite(dashBoardVO param, String[] files, String[] fileNm, MultipartHttpServletRequest mphr) throws Exception;
+	public void boardWrite(dashBoardVO param, String[] files, String[] fileNm, MultipartHttpServletRequest request) throws Exception;
 	
 	// Dash Board List SELECT
 	public List<dashBoardVO> boardList(SearchCriteria param) throws Exception;
@@ -26,7 +26,7 @@ public interface dashBoardService {
 	public dashBoardVO boardRead(int boardNo) throws Exception;
 	
 	// Dash Board UPDATE
-	public void boardUpdate(dashBoardVO param, String[] files, String[] fileNm, MultipartHttpServletRequest mphr) throws Exception;
+	public void boardUpdate(dashBoardVO param, String[] files, String[] fileNm, MultipartHttpServletRequest request) throws Exception;
 	
 	// DashBoard DELETE
 	public void boardDelete(int boardNo) throws Exception;

@@ -20,6 +20,7 @@
 <script src="<c:url value='/js/jQuery/jquery.form.min.js'/>"></script>
 <script src="<c:url value='/js/bootstrap/bootstrap-4.5.3.js' />"></script>
 <script src="<c:url value='/js/bootstrap/bootstrap-4.5.3.min.js' />"></script>
+<script src="<c:url value='/js/bootstrap/bootbox.min.js' />"></script>
 
 <%-- jQuery plug-in --%>
 <script src="<c:url value='/js/jQuery/jquery.serialize-object.js' />"></script>
@@ -41,3 +42,7 @@
 <script src="<c:url value='/js/datatables/dataTables.checkboxes.min.js' />"></script>
 <script src="<c:url value='/js/datatables/datetime.js' />"></script>
 <script src="<c:url value='/js/moment/moment.js' />"></script>
+
+<%-- custom --%>
+<script src="<c:url value='/js/cmmn/bbs_cmmn.js' />"></script>
+

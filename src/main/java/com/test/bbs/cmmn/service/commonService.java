@@ -42,7 +42,7 @@ public interface commonService {
 	 * @param 파일 조회 정보
 	 * @return
 	 */
-	public Map selectFileDown(HashMap<String, Object> param) throws Exception;
+	public Map<String, Object> selectFileDown(HashMap<String, Object> param) throws Exception;
 
 	/**
 	 * 엑셀다운로드
