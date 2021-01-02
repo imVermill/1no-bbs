@@ -21,31 +21,41 @@ $(document).ready(function() {
 })
 </script>
 <body>
-	<form name='homeForm' action="/sign/signIn.do" method="post">
-		<c:if test="${member == null}">
-			<div>
-				<label for="userId"></label> 
-				<input type="text" id="userId" name="userId">
-			</div>
-			<div>
-				<label for="password"></label> 
-				<input type="password" id="password" name="password">
-			</div>
-			<div>
-				<button type="submit">로그인</button>
-				<button type="button" id="btnSignUp" name="btnSignUp">회원가입</button>
-			</div>
-		</c:if>
-		<c:if test="${member != null }">
-			<div>
-				<p>${member.userId}님환영 합니다.</p>
-				<button type="button" id="btnSignEdit" name="btnSignEdit">회원정보수정</button>
-				<button type="button" id="btnSignOut" name="btnSignOut">로그아웃</button>
-			</div>
-		</c:if>
-		<c:if test="${msg == false}">
-			<p style="color: red;">로그인 실패! 아이디와 비밀번호 확인해주세요.</p>
-		</c:if>
-	</form>
+
+<div class="container">
+	
+	<%-- nav include --%>
+	<%@ include file="/WEB-INF/jsp/include/nav.jsp" %>
+	
+		<section id="container">
+			<form name='homeForm' action="/sign/signIn.do" method="post">
+				<c:if test="${member == null}">
+					<div class="form-group">
+						<label for="userId"></label> 
+						<input type="text" class="form-control" id="userId" name="userId">
+					</div>
+					<div class="form-group">
+						<label for="password"></label> 
+						<input type="password" class="form-control" id="password" name="password">
+					</div>
+					<div class="form-group">
+						<button type="submit" class="btn btn-primary">로그인</button>
+						<button type="button" class="btn btn-secondary" id="btnSignUp" name="btnSignUp">회원가입</button>
+					</div>
+				</c:if>
+				<c:if test="${member != null }">
+					<div>
+						<p>${member.userId}님환영 합니다.</p>
+						<button type="button" class="btn btn-info" id="btnSignEdit" name="btnSignEdit">회원정보수정</button>
+						<button type="button" class="btn btn-primary" id="btnSignOut" name="btnSignOut">로그아웃</button>
+					</div>
+				</c:if>
+				<c:if test="${msg == false}">
+					<p style="color: red;">로그인 실패! 아이디와 비밀번호 확인해주세요.</p>
+				</c:if>
+			</form>
+		</section>
+</div>
+
 </body>
 </html>

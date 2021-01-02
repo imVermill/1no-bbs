@@ -1,12 +1,26 @@
 package com.test.bbs.member.web;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.social.connect.Connection;
+import org.springframework.social.google.api.Google;
+import org.springframework.social.google.api.impl.GoogleTemplate;
+import org.springframework.social.google.api.plus.Person;
+import org.springframework.social.google.api.plus.PlusOperations;
+import org.springframework.social.google.connect.GoogleConnectionFactory;
+import org.springframework.social.oauth2.AccessGrant;
+import org.springframework.social.oauth2.GrantType;
+import org.springframework.social.oauth2.OAuth2Operations;
+import org.springframework.social.oauth2.OAuth2Parameters;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -21,11 +35,17 @@ public class memberController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(memberController.class);
 	
+	@Autowired
+	private GoogleConnectionFactory googleConnectionFactory;
+	@Autowired
+	private OAuth2Parameters googleOAuth2Parameters;
+	
 	@Inject
 	BCryptPasswordEncoder pwdEncoder;
 	
 	@Inject
 	memberService mService;
+	
 	
 	@RequestMapping(value = "/sign/signUp.do", method=RequestMethod.GET)
 	public String signUp() throws Exception {
@@ -36,7 +56,7 @@ public class memberController {
 
 	@RequestMapping(value="/sign/signUpAjax.do", method=RequestMethod.POST)
 	public String signUpAjax(memberVO param) throws Exception {
-		logger.info("postRegister");
+		logger.info("==> postRegister");
 		int result = mService.chkedUserInfo(param);
 		try {
 			if (result != 1) {
@@ -54,6 +74,57 @@ public class memberController {
 		
 		return "redirect:/";
 	}
+	
+	
+	@RequestMapping(value = "/googleLogin.do", method = RequestMethod.POST)
+	public String doGoogleSignInActionPage(HttpServletResponse response, Model model) throws Exception {
+		
+		OAuth2Operations oauthOperations = googleConnectionFactory.getOAuthOperations();
+		String url = oauthOperations.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, googleOAuth2Parameters);
+	  
+		logger.debug("/member/googleSignIn, url : " + url);
+	  
+		model.addAttribute("url", url);
+	  
+		return "login/googleLogin";
+	}
+	
+	@RequestMapping(value = "/googleSignInCallback.do", method = RequestMethod.GET)
+	public String doSessionAssignActionPage(HttpServletRequest request) throws Exception {
+		logger.info("/member/googleSignInCallback");
+		String code = request.getParameter("code");
+
+		OAuth2Operations oauthOperations = googleConnectionFactory.getOAuthOperations();
+		AccessGrant accessGrant = oauthOperations.exchangeForAccess(code , googleOAuth2Parameters.getRedirectUri(), null);
+
+		String accessToken = accessGrant.getAccessToken();
+		Long expireTime = accessGrant.getExpireTime();
+	  
+		if (expireTime != null && expireTime < System.currentTimeMillis()) {
+			accessToken = accessGrant.getRefreshToken();
+			System.out.printf("accessToken is expired. refresh token = {}", accessToken);
+		}
+	  
+		Connection<Google> connection = googleConnectionFactory.createConnection(accessGrant);
+		Google google = connection == null ? new GoogleTemplate(accessToken) : connection.getApi();
+
+		PlusOperations plusOperations = google.plusOperations();
+		Person profile = plusOperations.getGoogleProfile();
+		memberVO memVO = new memberVO();
+		
+		logger.debug("profile.getDisplayName() == >" + profile.getDisplayName());
+	  
+		memVO.setUserNm(profile.getDisplayName());
+		memVO.setSnsId("g" + profile.getId());
+		
+		HttpSession session = request.getSession();
+		//memVO = service.googleLogin(memVO);
+
+		session.setAttribute("login", memVO);
+
+		return "redirect:/";
+	}
+	
 	
 	// member signIn
 	@RequestMapping(value = "/sign/signIn.do", method=RequestMethod.GET)

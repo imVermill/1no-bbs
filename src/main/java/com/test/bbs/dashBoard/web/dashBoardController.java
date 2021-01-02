@@ -73,7 +73,7 @@ public class dashBoardController {
 		
 		model.addAttribute("pageMaker", pageMaker);
 		
-		return "/dashBoard/listView_bak";
+		return "/dashBoard/listView";
 	}
 	
 	@RequestMapping(value = "/dashBoard/listAjax.do")

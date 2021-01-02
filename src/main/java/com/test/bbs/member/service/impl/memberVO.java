@@ -6,8 +6,12 @@ public class memberVO {
 	private String userId;
 	private String password;
 	private String userNm;
-	private Date regDate;
 	private String userSttus;
+	private Date regDate;
+	
+	private String email;
+	private String snsYn;
+	private String snsId;
 	
 	public String getUserId() {
 		return userId;
@@ -40,9 +44,30 @@ public class memberVO {
 		this.userSttus = userSttus;
 	}
 	
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getSnsYn() {
+		return snsYn;
+	}
+	public void setSnsYn(String snsYn) {
+		this.snsYn = snsYn;
+	}
+	public String getSnsId() {
+		return snsId;
+	}
+	public void setSnsId(String snsId) {
+		this.snsId = snsId;
+	}
+	
+
 	@Override
 	public String toString() {
-		return "memberVO [userId = " + userId + ", password = " + password + ", userNm = " + userNm 
-				+ ", regDate = " + regDate + ", userSttus = " + userSttus + "]";
+		return "memberVO [userId = " + userId + ", password = " + password 
+				+ ", userNm = " + userNm + ", userSttus = " + userSttus + ", regDate = " + regDate 
+				+ ", email = " + email + ", snsYn = " + snsYn + ", snsId = " + snsId + "]";
 	}
 }
