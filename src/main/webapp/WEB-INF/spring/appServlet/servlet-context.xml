@@ -25,6 +25,7 @@
 	
 	<context:component-scan base-package="com.test.bbs" />
 	
+	<beans:bean class="com.test.bbs.member.web.NaverLoginBO" id="naverLoginBO" />
 	
 	<!-- Google Class Bean설정 Client ID PW Setting -->
 	<beans:bean id="googleConnectionFactory" class="org.springframework.social.google.connect.GoogleConnectionFactory">

@@ -1,31 +1,26 @@
 package com.test.bbs.member.web;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.social.connect.Connection;
-import org.springframework.social.google.api.Google;
-import org.springframework.social.google.api.impl.GoogleTemplate;
-import org.springframework.social.google.api.plus.Person;
-import org.springframework.social.google.api.plus.PlusOperations;
-import org.springframework.social.google.connect.GoogleConnectionFactory;
-import org.springframework.social.oauth2.AccessGrant;
-import org.springframework.social.oauth2.GrantType;
-import org.springframework.social.oauth2.OAuth2Operations;
-import org.springframework.social.oauth2.OAuth2Parameters;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.test.bbs.member.service.memberService;
 import com.test.bbs.member.service.impl.memberVO;
 
@@ -35,16 +30,69 @@ public class memberController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(memberController.class);
 	
-	@Autowired
-	private GoogleConnectionFactory googleConnectionFactory;
-	@Autowired
-	private OAuth2Parameters googleOAuth2Parameters;
+	private NaverLoginBO naverLoginBO;
+	private String apiResult = null;
 	
+	@Autowired
+	private void setNaverLoginBO(NaverLoginBO naverLoginBO) {
+		this.naverLoginBO = naverLoginBO;
+	}
+
 	@Inject
 	BCryptPasswordEncoder pwdEncoder;
 	
 	@Inject
 	memberService mService;
+	
+	
+
+	// 로그인 첫 화면 요청 메소드
+	@RequestMapping(value = "/naverSignIn.do", method = { RequestMethod.GET, RequestMethod.POST })
+	public String login(Model model, HttpSession session) throws Exception {
+		logger.info("==> Naver Sign-In");
+		// 네이버아이디로 인증 URL을 생성하기 위하여 naverLoginBO클래스의 getAuthorizationUrl 호출
+		String naverAuthUrl = naverLoginBO.getAuthorizationUrl(session);
+		
+		logger.debug("naverAuthUrl ==> " + naverAuthUrl);
+		
+		model.addAttribute("url", naverAuthUrl);
+		return "/sign/signIn";
+	}
+
+	// 네이버 로그인 성공시 callback호출 메소드
+	@RequestMapping(value = "/naverCallback.do", method = { RequestMethod.GET, RequestMethod.POST })
+	public String callback(Model model, @RequestParam String code, @RequestParam String state, HttpSession session) throws IOException, ParseException {
+		logger.info("==> Naver callback");
+		
+		OAuth2AccessToken oauthToken;
+		oauthToken = naverLoginBO.getAccessToken(session, code, state);
+		
+		// 1. 로그인 사용자 정보를 읽어온다.
+		apiResult = naverLoginBO.getUserProfile(oauthToken); // String형식의 json데이터
+		
+		// 2. String형식인 apiResult를 json형태로 바꿈
+		JSONParser parser = new JSONParser();
+		Object obj = parser.parse(apiResult);
+		JSONObject jsonObj = (JSONObject) obj;
+		
+		// 3. 데이터 파싱
+		// Top레벨 단계 _response 파싱
+		JSONObject response_obj = (JSONObject) jsonObj.get("response");
+		// response의 nickname값 파싱
+		String nickname = (String) response_obj.get("nickname");
+		logger.debug("nickname ==> " + nickname);
+		
+		// 4.파싱 닉네임 세션으로 저장
+		session.setAttribute("sessionId", nickname); // 세션 생성
+		model.addAttribute("result", apiResult);
+		
+		return "/sign/signIn";
+	}
+	
+	
+	
+	
+	
 	
 	
 	@RequestMapping(value = "/sign/signUp.do", method=RequestMethod.GET)
@@ -76,67 +124,19 @@ public class memberController {
 	}
 	
 	
-	@RequestMapping(value = "/googleLogin.do", method = RequestMethod.POST)
-	public String doGoogleSignInActionPage(HttpServletResponse response, Model model) throws Exception {
-		
-		OAuth2Operations oauthOperations = googleConnectionFactory.getOAuthOperations();
-		String url = oauthOperations.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, googleOAuth2Parameters);
-	  
-		logger.debug("/member/googleSignIn, url : " + url);
-	  
-		model.addAttribute("url", url);
-	  
-		return "login/googleLogin";
-	}
-	
-	@RequestMapping(value = "/googleSignInCallback.do", method = RequestMethod.GET)
-	public String doSessionAssignActionPage(HttpServletRequest request) throws Exception {
-		logger.info("/member/googleSignInCallback");
-		String code = request.getParameter("code");
-
-		OAuth2Operations oauthOperations = googleConnectionFactory.getOAuthOperations();
-		AccessGrant accessGrant = oauthOperations.exchangeForAccess(code , googleOAuth2Parameters.getRedirectUri(), null);
-
-		String accessToken = accessGrant.getAccessToken();
-		Long expireTime = accessGrant.getExpireTime();
-	  
-		if (expireTime != null && expireTime < System.currentTimeMillis()) {
-			accessToken = accessGrant.getRefreshToken();
-			System.out.printf("accessToken is expired. refresh token = {}", accessToken);
-		}
-	  
-		Connection<Google> connection = googleConnectionFactory.createConnection(accessGrant);
-		Google google = connection == null ? new GoogleTemplate(accessToken) : connection.getApi();
-
-		PlusOperations plusOperations = google.plusOperations();
-		Person profile = plusOperations.getGoogleProfile();
-		memberVO memVO = new memberVO();
-		
-		logger.debug("profile.getDisplayName() == >" + profile.getDisplayName());
-	  
-		memVO.setUserNm(profile.getDisplayName());
-		memVO.setSnsId("g" + profile.getId());
-		
-		HttpSession session = request.getSession();
-		//memVO = service.googleLogin(memVO);
-
-		session.setAttribute("login", memVO);
-
-		return "redirect:/";
-	}
 	
 	
 	// member signIn
 	@RequestMapping(value = "/sign/signIn.do", method=RequestMethod.GET)
 	public String signIn() throws Exception {
-		logger.info("==> getRegister signIn");
+		logger.info("==> get signIn");
 		
 		return "/sign/signIn";
 	}
 	
 	@RequestMapping(value="/sign/signInAjax.do", method=RequestMethod.POST)
 	public String signIn(memberVO param, HttpSession httpSession, RedirectAttributes rttr) throws Exception {
-		logger.info("postLogin");
+		logger.info("==> post signIn");
 		
 		httpSession.getAttribute("member");
 		memberVO signIn = mService.signIn(param);
@@ -154,15 +154,15 @@ public class memberController {
 	}
 	
 	@RequestMapping(value="/sign/signOut.do", method=RequestMethod.GET)
-	public String signOut(HttpSession httpSession) throws Exception {
-		httpSession.invalidate();
+	public String signOut(HttpSession session) throws Exception {
+		session.invalidate();
 		
 		return "redirect:/";
 	}
 	
 	// member signEdit
 	@RequestMapping(value="/sign/signEdit.do", method=RequestMethod.GET)
-	public String signEdit(memberVO param, HttpSession httpSession) throws Exception {
+	public String signEdit(memberVO param, HttpSession session) throws Exception {
 		
 		return "/sign/signEdit.do";
 	}
